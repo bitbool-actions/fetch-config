@@ -1,0 +1,37 @@
+#Can be used outside of github.
+#pushed to docker.io/datawiseai/actions-fetch-config:generic-1.1.0 manually, no CI.
+
+FROM ghcr.io/bitbool-actions/fetch-config:1.0.0
+
+WORKDIR /output
+
+ENV GITHUB_ENV=/output/.github_env
+ENV GITHUB_WORKSPACE=/output
+
+ENV LOG_LEVEL=INFO
+ENV APPEND_TO_FILES=false
+ENV ADD_QUOTES_TO_ENVVAR_VALUES=false
+ENV QUOTES_TO_ADD=false
+ENV SECRETS_2_YAML_HEADER=false
+ENV MASK_VALUES=true
+
+ENV SECRETS_2_YAML_FILE=false
+ENV SECRETS_2_JSON_FILE=false
+ENV SECRETS_2_PLAIN_FILE=false
+ENV SECRETS_2_ENV_FILE=false
+ENV SECRETS_2_GITHUB_ENV=false
+ENV SECRETS_2_RUNNER_ENV=false
+
+ENV AWS_SECRET_IDS=""
+ENV AWS_ACCESS_KEY_ID=""
+ENV AWS_SECRET_ACCESS_KEY=""
+ENV AWS_REGION=""
+ENV SECRET_NAMES=""
+
+
+COPY tests /app/tests
+COPY main.py /app/main.py
+
+ENTRYPOINT ["python", "/app/main.py"]
+
+

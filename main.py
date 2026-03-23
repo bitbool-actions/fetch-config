@@ -9,11 +9,19 @@ import logging
 import sys
 import re
 
+INPUTS_PREFIX=''
+def running_in_github_actions():
+    return os.environ.get("GITHUB_ACTIONS", "").lower() == "true"
+
+if running_in_github_actions():
+	INPUTS_PREFIX='INPUT_'
+
+
 # ===============================
 # Initialize logger
 # ===============================
 
-loglevel = getattr(logging, os.environ.get('INPUT_LOG_LEVEL','INFO'))
+loglevel = getattr(logging, os.environ.get(INPUTS_PREFIX+'LOG_LEVEL','INFO'))
 
 logger = logging.getLogger(__name__)
 logger.setLevel(loglevel)  # Set logger level
@@ -71,21 +79,21 @@ def str_to_bool(s: str) -> bool:
 GITHUB_ENV = os.environ['GITHUB_ENV']
 GITHUB_WORKSPACE = os.environ["GITHUB_WORKSPACE"]
 
-APPEND_TO_FILES = os.environ['INPUT_APPEND_TO_FILES']
-ADD_QUOTES_TO_ENVVAR_VALUES = os.environ['INPUT_ADD_QUOTES_TO_ENVVAR_VALUES']
-QUOTES_TO_ADD = os.environ['INPUT_QUOTES_TO_ADD']
-SECRETS_2_YAML_HEADER = os.environ['INPUT_SECRETS_2_YAML_HEADER']
-MASK_VALUES = str_to_bool(os.environ['INPUT_MASK_VALUES'])
+APPEND_TO_FILES = os.environ[INPUTS_PREFIX+'APPEND_TO_FILES']
+ADD_QUOTES_TO_ENVVAR_VALUES = os.environ[INPUTS_PREFIX+'ADD_QUOTES_TO_ENVVAR_VALUES']
+QUOTES_TO_ADD = os.environ[INPUTS_PREFIX+'QUOTES_TO_ADD']
+SECRETS_2_YAML_HEADER = os.environ[INPUTS_PREFIX+'SECRETS_2_YAML_HEADER']
+MASK_VALUES = str_to_bool(os.environ[INPUTS_PREFIX+'MASK_VALUES'])
 
-SECRET_NAMES = input_to_array("INPUT_SECRET_NAMES")
-AWS_SECRET_IDS = input_to_array("INPUT_AWS_SECRET_IDS")
+SECRET_NAMES = input_to_array(INPUTS_PREFIX+'SECRET_NAMES')
+AWS_SECRET_IDS = input_to_array(INPUTS_PREFIX+'AWS_SECRET_IDS')
 
-SECRETS_2_YAML_FILE = input_to_array('INPUT_SECRETS_2_YAML_FILE')
-SECRETS_2_JSON_FILE = input_to_array('INPUT_SECRETS_2_JSON_FILE')
-SECRETS_2_PLAIN_FILE = input_to_array('INPUT_SECRETS_2_PLAIN_FILE')
-SECRETS_2_ENV_FILE = input_to_array('INPUT_SECRETS_2_ENV_FILE')
-SECRETS_2_GITHUB_ENV = str_to_bool(os.environ['INPUT_SECRETS_2_GITHUB_ENV'])
-SECRETS_2_RUNNER_ENV = str_to_bool(os.environ['INPUT_SECRETS_2_RUNNER_ENV'])
+SECRETS_2_YAML_FILE = input_to_array(INPUTS_PREFIX+'SECRETS_2_YAML_FILE')
+SECRETS_2_JSON_FILE = input_to_array(INPUTS_PREFIX+'SECRETS_2_JSON_FILE')
+SECRETS_2_PLAIN_FILE = input_to_array(INPUTS_PREFIX+'SECRETS_2_PLAIN_FILE')
+SECRETS_2_ENV_FILE = input_to_array(INPUTS_PREFIX+'SECRETS_2_ENV_FILE')
+SECRETS_2_GITHUB_ENV = str_to_bool(os.environ[INPUTS_PREFIX+'SECRETS_2_GITHUB_ENV'])
+SECRETS_2_RUNNER_ENV = str_to_bool(os.environ[INPUTS_PREFIX+'SECRETS_2_RUNNER_ENV'])
 
 # Determine file mode based on append setting
 if str_to_bool(APPEND_TO_FILES):
@@ -364,7 +372,7 @@ def export_secret(secret_id, secret, filetype, idx):
 def prepare_aws_env_var(env_var_name,hide=False):
 	logger.debug("Preparing AWS environment")
 	try:
-		value = os.environ[f"INPUT_{env_var_name}"]
+		value = os.environ[f"{INPUTS_PREFIX}{env_var_name}"]
 		logger.debug(f"Got {env_var_name} : {"****MASKED****" if hide else value} from INPUT_{env_var_name}, setting it as {env_var_name}")
 		os.environ[env_var_name] = value
 	except Exception as err:
