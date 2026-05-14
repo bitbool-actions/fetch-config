@@ -11,7 +11,7 @@ import re
 
 INPUTS_PREFIX=''
 def running_in_github_actions():
-    return os.environ.get("GITHUB_ACTIONS", "").lower() == "true"
+	return os.environ.get("GITHUB_ACTIONS", "").lower() == "true"
 
 if running_in_github_actions():
 	INPUTS_PREFIX='INPUT_'
@@ -163,9 +163,9 @@ def quote_if_needed(s,force=False):
 
 # Remove surrounding quotes from string
 def strip_quotes(s: str) -> str:
-    if (s.startswith('"') and s.endswith('"')) or (s.startswith("'") and s.endswith("'")):
-        return s[1:-1]
-    return s
+	if (s.startswith('"') and s.endswith('"')) or (s.startswith("'") and s.endswith("'")):
+		return s[1:-1]
+	return s
 
 # Convert dictionary to environment file format
 def dict_to_env(data):
@@ -183,8 +183,8 @@ def dict_to_env(data):
 def create_dict_from_plain(content):
 	secret_dict = {}
 	for line in content.splitlines():
-		line = (line.strip()).split('=')
-		secret_dict[line[0].strip()] = strip_quotes(line[1].strip())
+		key, value = line.strip().split('=', 1)
+		secret_dict[key.strip()] = strip_quotes(value.strip())
 	return secret_dict
 
 # Convert YAML content to dictionary
@@ -491,7 +491,7 @@ def test():
 			pattern = re.compile(r"^FETCHER")
 			fetcher_env = {k: v for k, v in os.environ.items() if pattern.match(k)}
 			for key, value in fetcher_env.items():
-			    logger.info(f"{key}={value}")			
+				logger.info(f"{key}={value}")			
 
 # ===============================
 # Script entry point
